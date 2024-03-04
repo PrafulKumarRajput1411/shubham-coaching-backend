@@ -8,12 +8,12 @@ const sendEmail = async (email, subject, html) => {
             port: 80,
             secure: true,
             auth: {
-                user: 'Radianttutorials11@gmail.com',
+                user: 'radianttutorials11@gmail.com',
                 pass: 'wjgfozczrpkvujmr'
             }
         });
         await transporter.sendMail({
-            from: 'Radianttutorials11@gmail.com',
+            from: 'radianttutorials11@gmail.com',
             to: email,
             subject: subject,
             html: html,
