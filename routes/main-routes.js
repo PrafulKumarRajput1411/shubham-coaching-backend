@@ -5,7 +5,7 @@ const express = require('express')
 
 const router = express.Router();
 router.get("/getData", homeControllers.getUserData)
-router.get('/sendEmail', sendMailController.sendContactUsEmail)
+router.post('/sendEmail', sendMailController.sendContactUsEmail)
 
 // export default router;
 module.exports = router
