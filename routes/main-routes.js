@@ -5,6 +5,7 @@ const express = require('express')
 
 const router = express.Router();
 router.get("/getData", homeControllers.getUserData)
+router.get('/getUniqueId', homeControllers.generateUnqiueId)
 router.post('/sendEmail', sendMailController.sendContactUsEmail)
 
 // export default router;
