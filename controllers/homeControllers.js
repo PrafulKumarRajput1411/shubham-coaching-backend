@@ -14,7 +14,7 @@ const generateUnqiueId = async (req, res) => {
 
     // Generate a new UUID
     const uniqueId = uuidv4();
-
+    res.status(200).json({ value: uniqueId })
     console.log('Unique ID:', uniqueId);
     // connection.query('SELECT * FROM customers', [true], (error, results, fields) => {
     //     // console.log(results)
