@@ -24,6 +24,7 @@
 //         idle: 10000,
 //     }
 // }
+
 const moongoose = require('mongoose')
 const DB = "mongodb+srv://prafulkumarrajput14:S3pp886su1aITm2G@cluster0.jjkijqc.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
 moongoose.connect(DB).then(() => {
