@@ -1,22 +1,14 @@
 const { v4: uuidv4 } = require('uuid');
-const connection = require('../model/main');
-const { DB } = require('../config/database');
+const ContactUs = require("../model/contact_us")
+
 const uuidGenerator = require("../utils/uuidGenerator");
 const { getListOfContactUsData } = require('../utils/queryList');
 
 const getUserData = async (req, res) => {
-    let uuid = uuidGenerator();
 
-    console.log(uuid)
-    let query = getListOfContactUsData;
-    console.log(query)
-    connection.query(query, [true], (error, results, fields) => {
-        if (error) {
-            return res.status(500).json({ status: false, message: error })
-        } else {
-            return res.status(200).json({ status: true, message: results })
-        }
-    })
+}
+const saveContactUsData = async (req, res) => {
+
 }
 const generateUnqiueId = async (req, res) => {
 
@@ -48,5 +40,6 @@ const generateUnqiueId = async (req, res) => {
 }
 module.exports = {
     getUserData,
-    generateUnqiueId
+    generateUnqiueId,
+    saveContactUsData
 }
