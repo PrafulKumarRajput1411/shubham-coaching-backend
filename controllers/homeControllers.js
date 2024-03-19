@@ -3,9 +3,9 @@ const ContactUs = require("../model/contact_us")
 
 const uuidGenerator = require("../utils/uuidGenerator");
 const { getListOfContactUsData } = require('../utils/queryList');
-
 const getUserData = async (req, res) => {
-
+    const data = await ContactUs.find();
+    res.status(200).json({ status: true, data: data })
 }
 const saveContactUsData = async (req, res) => {
 
