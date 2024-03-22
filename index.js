@@ -6,6 +6,7 @@ const cors = require('cors')
 const db = require('./config/database')
 const app = express();
 const PORT = 8001;
+require('dotenv').config();
 app.use(express.json());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
