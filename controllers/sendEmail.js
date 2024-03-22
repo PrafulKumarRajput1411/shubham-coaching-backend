@@ -13,7 +13,7 @@ const sendContactUsEmail = async (req, res) => {
         let subject = req.body.subject
         let message = req.body.message
         let html = contactUsTempalte(phone, name, email, message);
-        await sendEmail('radianttutorials11@gmail.com', subject, html);
+        await sendEmail('', subject, html);
         let uuid = uuidGenerator();
         console.log(uuid)
         let obj = {
