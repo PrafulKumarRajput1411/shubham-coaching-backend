@@ -1,7 +1,8 @@
 // import the controllers
 const homeControllers = require('../controllers/homeControllers')
 const sendMailController = require("../controllers/sendEmail");
-const express = require('express')
+const express = require('express');
+const auth = require('../middleware/auth');
 
 const router = express.Router();
 router.get("/getData", homeControllers.getUserData)
@@ -19,7 +20,10 @@ router.get('/getBoardList', homeControllers.getBoardList)
 router.post('/save-available-days', homeControllers.saveAvailableDays)
 router.get('/get-available-days', homeControllers.getAvailableDaysList)
 router.post('/save-available-time-slot', homeControllers.saveAvailableTimeSlot)
-router.get('/get-list-of-avaialbe-time-slot', homeControllers.getListOfAvailableTimeSlot)
+router.get('/get-list-of-avaialbe-time-slot', auth, homeControllers.getListOfAvailableTimeSlot)
 router.post('/book-demo-session', homeControllers.saveBookDemoSession)
+router.get('/get-book-demo-list', homeControllers.getListOfDemoSesson)
+router.post('/login', homeControllers.login)
+router.post('/signUp', homeControllers.signUp)
 // export default router;
 module.exports = router
