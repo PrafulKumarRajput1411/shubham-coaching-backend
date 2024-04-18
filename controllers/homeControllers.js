@@ -5,8 +5,12 @@ const BoardSchema = require("../model/educationBoard");
 const Days = require("../model/days");
 const TimeSlot = require('../model/demo-seesion-time-slot')
 const BookDemoSession = require('../model/bookDemoSession')
+const User = require('../model/userList')
 
+
+const jwt = require('jsonwebtoken');
 const uuidGenerator = require("../utils/uuidGenerator");
+const bcrypt = require('bcrypt');
 const { bookDemoSessionUser } = require("../utils/emailTemplate/book-demo-session-user-template");
 const sendEmail = require("../utils/nodemailer");
 const gotDemoTemplate = require("../utils/emailTemplate/got-book-demo.template");
@@ -205,6 +209,7 @@ const saveAvailableTimeSlot = async (req, res) => {
     }
 }
 const getListOfAvailableTimeSlot = async (req, res) => {
+    // console.log(req.query)
     try {
         let dataObj = await TimeSlot.find();
         if (dataObj.length > 0) {
@@ -247,6 +252,88 @@ const saveBookDemoSession = async (req, res) => {
         res.status(200).json({ status: false, message: "Please Reach out for Support!" });
     }
 }
+const getListOfDemoSesson = async (req, res) => {
+    try {
+        let dataObj = await BookDemoSession.find();
+        if (dataObj.length > 0) {
+            res.status(200).json({ status: true, message: "Success", data: dataObj })
+        } else {
+            res.status(200).json({ status: true, message: "No data found", data: [] })
+        }
+    } catch (error) {
+        res.status(500).json({ status: false, message: error ? error : "Something Went Wrong!" })
+    }
+}
+const login = async (req, res) => {
+    try {
+        let id = req.body.id;
+        let password = req.body.password;
+        let dataObj = await User.findOne({ $or: [{ user_name: id }, { user_email: id }] });
+        if (!dataObj) {
+            res.status(200).json({ status: false, message: "No User Found!" });
+            return;
+        }
+
+        const isPasswordCorrect = bcrypt.compare(password, dataObj.user_password);
+        isPasswordCorrect.then((response) => {
+            if (response) {
+                let obj = {
+                    email: dataObj.user_email,
+                    uuid: dataObj.user_uuid,
+                    user_type: dataObj.user_type
+                }
+                const token = jwt.sign(obj, process.env.JWT_SECRET_KEY, { expiresIn: '1h' });
+                res.cookie('token', token, { httpOnly: true, sameSite: 'none', secure: true })
+                res.send({ status: true, message: "Success", JJ_lt_tok: token, data: dataObj })
+                return
+            } else {
+                return res.status(200).json({ status: false, message: "Password is Incorrect!" });
+            }
+        }).catch((err) => {
+            console.log(err)
+            return res.status(500).json({ status: false, message: "Interval Server Error", error: err })
+        })
+    } catch (error) {
+        res.status(500).json({ status: false, message: error ? error : 'Something Went Wrong!' });
+    }
+}
+const signUp = async (req, res) => {
+    try {
+        let userName = req.body.userName;
+        let userEmail = req.body.userEmail;
+        let userPassword = req.body.userPassword;
+        let userType = req.body.userType;
+        let uuid = uuidGenerator();
+        const hashedPassword = await bcrypt.hash(userPassword, 10);
+        //checking this email or username is already registered or not
+        let findingUserName = await User.findOne({ user_name: userName });
+        if (findingUserName) {
+            res.status(200).json({ status: false, message: "Username is already exists!" })
+            return
+        }
+        let findingUserEmail = await User.findOne({ user_email: userEmail });
+        if (findingUserEmail) {
+            res.status(200).json({ status: false, message: "User Email is already Exists!" })
+            return;
+        }
+        let obj = {
+            user_uuid: uuid,
+            user_name: userName,
+            user_email: userEmail,
+            user_password: hashedPassword,
+            user_type: userType
+        }
+        await User.create(obj);
+        res.status(200).json({ status: true, message: "User Created Successfully" })
+    } catch (error) {
+        res.status(500).json({ status: false, message: error ? error : "Something Went Wrong!" });
+    }
+}
+const testing = async (req, res) => {
+    setTimeout(() => {
+        return res.status(200).json({ status: true, message: "Working" })
+    }, 2000)
+}
 module.exports = {
     getUserData,
     generateUnqiueId,
@@ -260,5 +347,9 @@ module.exports = {
     getAvailableDaysList,
     saveAvailableTimeSlot,
     getListOfAvailableTimeSlot,
-    saveBookDemoSession
+    saveBookDemoSession,
+    getListOfDemoSesson,
+    login,
+    signUp,
+    testing
 }
