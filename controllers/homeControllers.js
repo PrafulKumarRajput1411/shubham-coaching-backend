@@ -274,19 +274,25 @@ const login = async (req, res) => {
             return;
         }
 
-        const isPasswordCorrect = await bcrypt.compare(password, dataObj.user_password);
-        if (isPasswordCorrect) {
-            let obj = {
-                email: dataObj.user_email,
-                uuid: dataObj.user_uuid,
-                user_type: dataObj.user_type
+        const isPasswordCorrect = bcrypt.compare(password, dataObj.user_password);
+        isPasswordCorrect.then((response) => {
+            if (response) {
+                let obj = {
+                    email: dataObj.user_email,
+                    uuid: dataObj.user_uuid,
+                    user_type: dataObj.user_type
+                }
+                const token = jwt.sign(obj, process.env.JWT_SECRET_KEY, { expiresIn: '1h' });
+                res.cookie('token', token, { httpOnly: true, sameSite: 'none', secure: true })
+                res.send({ status: true, message: "Success", JJ_lt_tok: token, data: dataObj })
+                return
+            } else {
+                return res.status(200).json({ status: false, message: "Password is Incorrect!" });
             }
-            const token = jwt.sign(obj, process.env.JWT_SECRET_KEY, { expiresIn: '30s' });
-            res.status(200).json({ status: true, message: "Success", JJ_lt_tok: token, data: dataObj })
-        } else {
-            res.status(200).json({ status: false, message: "Password is Incorrect!" });
-        }
-
+        }).catch((err) => {
+            console.log(err)
+            return res.status(500).json({ status: false, message: "Interval Server Error", error: err })
+        })
     } catch (error) {
         res.status(500).json({ status: false, message: error ? error : 'Something Went Wrong!' });
     }
@@ -323,6 +329,11 @@ const signUp = async (req, res) => {
         res.status(500).json({ status: false, message: error ? error : "Something Went Wrong!" });
     }
 }
+const testing = async (req, res) => {
+    setTimeout(() => {
+        return res.status(200).json({ status: true, message: "Working" })
+    }, 2000)
+}
 module.exports = {
     getUserData,
     generateUnqiueId,
@@ -339,5 +350,6 @@ module.exports = {
     saveBookDemoSession,
     getListOfDemoSesson,
     login,
-    signUp
+    signUp,
+    testing
 }
